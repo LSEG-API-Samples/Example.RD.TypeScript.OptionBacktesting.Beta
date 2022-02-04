@@ -1,0 +1,19 @@
+{
+  "name": "options",
+  "version": "1.0.0",
+  "description": "",
+  "main": "third_friday.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "date-holidays": "^3.14.2",
+    "fs": "^0.0.1-security",
+    "moment": "^2.29.1",
+    "source-map-loader": "^3.0.1"
+  }
+}
