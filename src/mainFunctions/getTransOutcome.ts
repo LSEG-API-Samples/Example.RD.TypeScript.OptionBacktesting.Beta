@@ -11,7 +11,7 @@ const getIdxs = getMath.getIdxs;
 // import { getSession } from '../../src/Common/session';
 // const session = getSession();
 
-async function getTransOutcome(optionTrans: any, asset: string, session: any, considerVIX: string = 'yes') {
+async function getTransOutcome(optionTrans: any, asset: string, session: any, offset: string = 'yes') {
     // await session.open();
     let noPair = [];
     for (let date of optionTrans.expDate) {
@@ -25,7 +25,7 @@ async function getTransOutcome(optionTrans: any, asset: string, session: any, co
         for (let i = noPair.length - 1; i >= 0; i--) { optionTrans[key].splice(noPair[i], 1) }
     };
 
-    if (considerVIX === 'yes') {
+    if (offset.toLowerCase() === 'yes') {
         optionTrans = await getOffsetTrans(optionTrans, session)
     };
 
