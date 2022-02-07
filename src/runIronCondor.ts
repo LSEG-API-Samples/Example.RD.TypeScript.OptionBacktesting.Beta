@@ -3,12 +3,14 @@ const getPairTrans = require('./mainFunctions/getPairTransactions');
 const getTransOutcome = require('./mainFunctions/getTransOutcome');
 const removeTrans = require('./supplFunctions/removeTrans');
 const mergeObjects = require('./supplFunctions/mergeObjects');
+const getMath = require('./supplFunctions/getMath');
+const getIdxs = getMath.getIdxs;
 const fs = require('fs')
 
 import { getSession } from '../src/Common/session';
 const session = getSession();
 
-async function shortIC(start: number, end: number, transDay: string, asset: string, sLeg: number, lLeg: number, diff: number, sPos: string, lPos: string, session: any) {
+async function shortIC(start: number, end: number, transDay: string, asset: string, sLeg: number, lLeg: number, diff: number, sPos: string, lPos: string, session: any, offset: string) {
     const startTime = Date.now();
     await session.open()
     let allOptionTrans: any = {
@@ -31,11 +33,11 @@ async function shortIC(start: number, end: number, transDay: string, asset: stri
 
     for (let year = start; year <= end; year++) {
         const startYear = Date.now();
-        const optionTransLeg1 = await getPairTrans(year, 'first', asset, sLeg, lLeg, diff, sPos, lPos, session);
-        const outcomeLeg1 = await getTransOutcome(optionTransLeg1, asset, session);
+        const optionTransLeg1 = await getPairTrans(year, transDay, asset, sLeg, lLeg, diff, sPos, lPos, session);
+        const outcomeLeg1 = await getTransOutcome(optionTransLeg1, asset, session, offset);
 
-        const optionTransLeg2 = await getPairTrans(year, 'first', asset, lLeg, sLeg, diff, lPos, sPos, session);
-        const outcomeLeg2 = await getTransOutcome(optionTransLeg2, asset, session);
+        const optionTransLeg2 = await getPairTrans(year, transDay, asset, lLeg, sLeg, diff, lPos, sPos, session);
+        const outcomeLeg2 = await getTransOutcome(optionTransLeg2, asset, session, offset);
 
         const optionTrans = mergeObjects(outcomeLeg1, outcomeLeg2);
         fs.writeFile(`Output_${year}.txt`, JSON.stringify(optionTrans), (err: any) => {
@@ -43,7 +45,7 @@ async function shortIC(start: number, end: number, transDay: string, asset: stri
         });
         allOptionTrans = mergeObjects(allOptionTrans, optionTrans);
         const endYear = Date.now();
-        console.log(`It took ${Math.round((endYear - startYear) / 1000)} seconds to create transactions for ${year}`)
+        console.log(`It took around ${Math.round((endYear - startYear) / 1000)} seconds to create transactions for ${year}`)
     };
 
     fs.writeFile(`Total_OutputPreRem.txt`, JSON.stringify(allOptionTrans), (err: any) => {
@@ -56,12 +58,26 @@ async function shortIC(start: number, end: number, transDay: string, asset: stri
         if (err) throw err;
     });
 
-    await session.close();
     const endTime = Date.now();
-    console.log(`It took ${Math.round((endTime - startTime) / 60000)} minutes to create all transactions for ${asset} for the period of ${start} to ${end}`)
+    console.log(`It took around ${Math.round((endTime - startTime) / 60000)} minutes to create all transactions for ${asset} for the period of ${start} to ${end}`)
+
+    let yearList = [];
+    let totalProfit = 0
+    for (let element of allOptionTrans.expDate) { element = new Date(element); yearList.push(element.getFullYear()) };
+    allOptionTrans['year'] = yearList;
+
+    for (let i = start; i <= end; i++) {
+        let indxYear = getIdxs(allOptionTrans.year, i);
+        let profitYear = indxYear.reduce((a: any, b: any) => { return a + allOptionTrans.totalPandL[b] }, 0);
+        totalProfit += profitYear;
+        console.log(`Total outcome from the strategy during ${i} was equal to ${profitYear}`);
+    }
+    console.log(`Total outcome for the period ${start} to ${end} was equal to ${totalProfit}`);
+
+    await session.close();
     return allOptionTrans;
 };
 
-shortIC(2015, 2021, 'first', '.NDX', 10, 20, 2, 'short', 'long', session).then((a) => {
+shortIC(2015, 2021, 'first', '.SPX', 10, 20, 5, 'short', 'long', session, 'yes').then((a) => {
     console.log(a);
 });
