@@ -12,10 +12,10 @@ async function getPairTrans(year: number, transDay: string, asset: string, callO
 
     const RICAndStrikeCall = await getPotentialRICs(year, transDay, asset, callOTM, diff, 'call', session);
     const sortedRicsCall = sortOptionRICs(RICAndStrikeCall[0], RICAndStrikeCall[1]);
-    const transDetailsCall = await getTransactions(year, 'first', asset, sortedRicsCall, 'call', callPos, session);
+    const transDetailsCall = await getTransactions(year, transDay, asset, sortedRicsCall, 'call', callPos, session);
     const RICAndStrikePut = await getPotentialRICs(year, transDay, asset, putOTM, diff, 'put', session);
     const sortedRicsPut = sortOptionRICs(RICAndStrikePut[0], RICAndStrikePut[1]);
-    const transDetailsPut = await getTransactions(year, 'first', asset, sortedRicsPut, 'put', putPos, session);
+    const transDetailsPut = await getTransactions(year, transDay, asset, sortedRicsPut, 'put', putPos, session);
     const optionTrans = mergeObjects(transDetailsCall, transDetailsPut);
 
     // await session.close();
