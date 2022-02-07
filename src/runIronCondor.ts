@@ -61,23 +61,23 @@ async function shortIC(start: number, end: number, transDay: string, asset: stri
     const endTime = Date.now();
     console.log(`It took around ${Math.round((endTime - startTime) / 60000)} minutes to create all transactions for ${asset} for the period of ${start} to ${end}`)
 
+    await session.close();
+    return allOptionTrans;
+};
+
+shortIC(2015, 2021, 'first', '.SPX', 10, 20, 5, 'short', 'long', session, 'yes').then((allOptionTrans) => {
+    console.log(allOptionTrans);
+    
     let yearList = [];
     let totalProfit = 0
     for (let element of allOptionTrans.expDate) { element = new Date(element); yearList.push(element.getFullYear()) };
     allOptionTrans['year'] = yearList;
 
-    for (let i = start; i <= end; i++) {
+    for (let i = 2015; i <= 2021; i++) {
         let indxYear = getIdxs(allOptionTrans.year, i);
         let profitYear = indxYear.reduce((a: any, b: any) => { return a + allOptionTrans.totalPandL[b] }, 0);
         totalProfit += profitYear;
         console.log(`Total outcome from the strategy during ${i} was equal to ${profitYear}`);
     }
-    console.log(`Total outcome for the period ${start} to ${end} was equal to ${totalProfit}`);
-
-    await session.close();
-    return allOptionTrans;
-};
-
-shortIC(2015, 2021, 'first', '.SPX', 10, 20, 5, 'short', 'long', session, 'yes').then((a) => {
-    console.log(a);
+    console.log(`Total outcome for the period 2015 to 2021 was equal to ${totalProfit}`);
 });
