@@ -4,11 +4,13 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"noEmitOnError": true,
+		"allowSyntheticDefaultImports": true,
 		"resolveJsonModule": true,
 		"sourceMap": true,
 		"strictNullChecks": false,
 		"suppressImplicitAnyIndexErrors": true,
 		"noImplicitAny": true,
+		"allowJs": true
 	},
 	"exclude": [
 		"node_modules",
