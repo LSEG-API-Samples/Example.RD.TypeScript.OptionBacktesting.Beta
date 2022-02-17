@@ -1,0 +1,729 @@
+﻿<% layout('layouts/boilerplate')%>
+    <div class="d-flex justify-content-center mt-4">
+        <h5> <u> List of conducted option transactions</u></h5>
+    </div>
+    <div class="container-fluid">
+        <div class="table-responsive-md" id="content">
+            <table class="table align-middle table table-hover table caption-top" id="table1">
+                <!-- <caption><strong> List of Option Transactions </strong></caption> -->
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">RIC</th>
+                        <th scope="col">Trans day</th>
+                        <th scope="col">Exp Day</th>
+                        <th scope="col">optionType</th>
+                        <th scope="col">position</th>
+                        <th scope="col">strike</th>
+                        <th scope="col">trans price</th>
+                        <th scope="col">OTM size</th>
+                        <th scope="col">Close Date</th>
+                        <th scope="col">Cdate price</th>
+                        <th scope="col">Contract Price</th>
+                        <th scope="col">Exer Outcome</th>
+                        <th scope="col">Total P&L</th>
+                        <th scope="col">Outcome</th>
+                    </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
+    <!--Reference to jQuery-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <!-- <script type="text/javascript" src="libs/FileSaver/FileSaver.min.js"></script>
+    <script type="text/javascript" src="libs/js-xlsx/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="tableExport.min.js"></script> -->
+    <script>
+
+        let data = JSON.parse('<%- outcomeValues %>')
+        $(document).ready(function () {
+            $('#table1').DataTable({
+                data: data,
+                columns: [
+                    { data: 'RIC' },
+                    { data: 'transDate' },
+                    { data: 'expDate' },
+                    { data: 'optionType' },
+                    { data: 'position' },
+                    { data: 'strike' },
+                    { data: 'transDatePrice' },
+                    { data: 'OTMSize' },
+                    { data: 'closeDate' },
+                    { data: 'pricesCDate' },
+                    { data: 'contractPrice' },
+                    { data: 'exerciseOutcome' },
+                    { data: 'totalPandL' },
+                    { data: 'outcome' }
+                ],
+                // dom: 'Bfrtip',
+                // buttons: [
+                //     'copy', 'csv', 'excel', 'pdf', 'print'
+                // ]
+            });
+        });
+        // $('#table1').tableExport({ type: 'csv' });
+    </script>
+    <div class="d-flex justify-content-center">
+        <h5> <u> Visualisation of the backtesting results (Aggregated)</u></h5>
+    </div>
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link" id="nav-openClose-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-openClose" type="button" role="tab" aria-controls="nav-openClose"
+                            aria-selected="false"># of Open/Closed
+                            positions</button>
+                        <button class="nav-link active" id="nav-aggrProit-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-aggrProit" type="button" role="tab" aria-controls="nav-aggrProit"
+                            aria-selected="true">Aggregated P&L</button>
+                        <button class="nav-link" id="nav-exerExp-tab" data-bs-toggle="tab" data-bs-target="#nav-exerExp"
+                            type="button" role="tab" aria-controls="nav-exerExp" aria-selected="false">P&L
+                            exercised/expired</button>
+                        <button class="nav-link" id="nav-exerExpCount-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-exerExpCount" type="button" role="tab" aria-controls="nav-exerExpCount"
+                            aria-selected="false">P&L
+                            exercised/expired count</button>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade" id="nav-openClose" role="tabpanel" aria-labelledby="nav-openClose-tab">
+                        <div>
+                            <canvas id="countTrans"></canvas>
+                        </div>
+                        <script>
+                            let countTrans = document.getElementById('countTrans').getContext('2d');
+                            let countTransLablels = '<%- countTransVisOutput[0] %>'.split(',');
+                            let openTrans = '<%- countTransVisOutput[1] %>'.split(',');
+                            let closedTrans = '<%- countTransVisOutput[2] %>'.split(',');
+
+                            let chart1 = new Chart(countTrans, {
+                                type: 'bar',
+                                data: {
+                                    labels: countTransLablels,
+                                    datasets: [{
+                                        label: 'Open Transactions',
+                                        backgroundColor: 'rgb(255, 99, 132)',
+                                        data: openTrans
+                                    },
+                                    {
+                                        label: 'Closed Transactions',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: closedTrans
+                                    }]
+                                },
+                                options: {
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                        },
+                                    },
+                                    responsive: true,
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                        },
+                                        y: {
+                                            stacked: true
+                                        }
+                                    }
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade show active" id="nav-aggrProit" role="tabpanel"
+                        aria-labelledby="nav-aggrProit-tab">
+                        <div>
+                            <canvas id="PandLOutput"></canvas>
+                        </div>
+                        <script>
+                            let PandLOutput = document.getElementById('PandLOutput').getContext('2d');
+                            let Aggrlabels = '<%- PandLVisOutput[0] %>'.split(',');
+                            let values = '<%- PandLVisOutput[1] %>'.split(',');
+                            let cumsum = '<%- PandLVisOutput[2] %>'.split(',');
+                            let chart2 = new Chart(PandLOutput, {
+                                type: 'bar',
+                                data: {
+                                    labels: Aggrlabels,
+                                    datasets: [{
+                                        label: 'Total Profit',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: values
+                                    },
+                                    {
+                                        label: 'Cumulative sum of Total Profit',
+                                        type: 'line',
+                                        backgroundColor: 'rgb(75, 192, 192)',
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        data: cumsum
+                                    }]
+                                },
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-exerExp" role="tabpanel" aria-labelledby="nav-exerExp-tab">
+                        <div>
+                            <canvas id="exerExp"></canvas>
+                        </div>
+                        <script>
+                            let exerExp = document.getElementById('exerExp').getContext('2d');
+                            let exerExpLabels = '<%- ExerExpVisOutput[0] %>'.split(',');
+                            let PandL = '<%- ExerExpVisOutput[1] %>'.split(',');
+                            let contractOutcome = '<%- ExerExpVisOutput[2] %>'.split(',');
+                            let exerciseOutcome = '<%- ExerExpVisOutput[3] %>'.split(',');
+
+                            let chart3 = new Chart(exerExp, {
+                                type: 'bar',
+                                data: {
+                                    labels: exerExpLabels,
+                                    datasets: [
+                                        {
+                                            label: 'Total Profit',
+                                            type: 'line',
+                                            backgroundColor: 'rgb(255, 205, 86)',
+                                            borderColor: 'rgb(255, 205, 86)',
+                                            data: PandL
+                                        },
+                                        {
+                                            label: 'Exercise Outcome',
+                                            backgroundColor: 'rgb(255, 99, 132)',
+                                            data: exerciseOutcome
+                                        },
+                                        {
+                                            label: 'Contract Price',
+                                            backgroundColor: 'rgb(54, 162, 235)',
+
+                                            data: contractOutcome
+                                        }]
+                                },
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-exerExpCount" role="tabpanel"
+                        aria-labelledby="nav-exerExpCount-tab">
+                        <div>
+                            <canvas id="ExerExpCountOutput"></canvas>
+                        </div>
+                        <script>
+                            let ExerExpCountOutput = document.getElementById('ExerExpCountOutput').getContext('2d');
+                            let ExerExpCountOutputLabels = '<%- ExerExpCountVisOutput[0] %>'.split(',');
+                            let expiredCount = '<%- ExerExpCountVisOutput[1] %>'.split(',');
+                            let exerciseCount = '<%- ExerExpCountVisOutput[2] %>'.split(',');
+                            let PandL1 = '<%- ExerExpCountVisOutput[3] %>'.split(',');
+                            console.log(expiredCount)
+                            let chart4 = new Chart(ExerExpCountOutput, {
+                                type: 'bar',
+                                data: {
+                                    labels: ExerExpCountOutputLabels,
+                                    datasets: [
+                                        {
+                                            label: 'Total Profit',
+                                            type: 'line',
+                                            backgroundColor: 'rgb(255, 205, 86)',
+                                            borderColor: 'rgb(255, 205, 86)',
+                                            data: PandL1,
+                                            yAxisID: 'y1'
+                                        },
+                                        {
+                                            label: 'Number of expired worthless options',
+                                            backgroundColor: 'rgb(255, 99, 132)',
+                                            data: expiredCount,
+                                            yAxisID: 'y'
+                                        },
+                                        {
+                                            label: 'Number of exercised options',
+                                            backgroundColor: 'rgb(54, 162, 235)',
+                                            data: exerciseCount,
+                                            yAxisID: 'y'
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            type: 'linear',
+                                            display: true,
+                                            position: 'right',
+                                        },
+                                        y1: {
+                                            type: 'linear',
+                                            display: true,
+                                            position: 'left',
+                                            grid: {
+                                                drawOnChartArea: false,
+                                            },
+                                        },
+                                    }
+                                }
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        <h5> <u> Visualisation of the backtesting results (Components)</u></h5>
+    </div>
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link" id="nav-exerExpComponent-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-exerExpComponent" type="button" role="tab"
+                            aria-controls="nav-exerExpComponent" aria-selected="false">Exerciced versus
+                            Expired</button>
+                        <button class="nav-link" id="nav-callPut-tab" data-bs-toggle="tab" data-bs-target="#nav-callPut"
+                            type="button" role="tab" aria-controls="nav-callPut" aria-selected="true">Call versus
+                            Put</button>
+                        <button class="nav-link" id="nav-longShort-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-longShort" type="button" role="tab" aria-controls="nav-longShort"
+                            aria-selected="false">Long versus Short</button>
+                        <button class="nav-link active" id="nav-ICLegs-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-ICLegs" type="button" role="tab" aria-controls="nav-ICLegs"
+                            aria-selected="false">Four legs of Iron
+                            Condort</button>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade" id="nav-exerExpComponent" role="tabpanel"
+                        aria-labelledby="nav-exerExpComponent-tab">
+                        <div>
+                            <canvas id="exerExpOutcome"></canvas>
+                        </div>
+                        <script>
+                            let exerExpOutcome = document.getElementById('exerExpOutcome').getContext('2d');
+                            let labels = '<%- PandLVisComponents[0] %>'.split(',');
+                            let expiredOutcome2 = '<%- PandLVisComponents[1].exerciseOutcome %>'.split(',');
+                            let exerciseOutcome2 = '<%- PandLVisComponents[1].expiredOutcome %>'.split(',');
+
+                            let chart5 = new Chart(exerExpOutcome, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(255, 99, 132)',
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        data: expiredOutcome2
+                                    },
+                                    {
+                                        label: 'Exercised options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        borderColor: 'rgb(54, 162, 235)',
+                                        data: exerciseOutcome2
+                                    }]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-callPut" role="tabpanel" aria-labelledby="nav-callPut-tab">
+                        <div>
+                            <canvas id="callPutOutcome"></canvas>
+                        </div>
+                        <script>
+                            let callPutOutcome = document.getElementById('callPutOutcome').getContext('2d');
+                            let callOutcome = '<%- PandLVisComponents[1].callOutcome %>'.split(',');
+                            let PutOutcome = '<%- PandLVisComponents[1].putOutcome %>'.split(',');
+
+                            let chart6 = new Chart(callPutOutcome, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(255, 99, 132)',
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        data: callOutcome
+                                    },
+                                    {
+                                        label: 'Exercised options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        borderColor: 'rgb(54, 162, 235)',
+                                        data: PutOutcome
+                                    }]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-longShort" role="tabpanel" aria-labelledby="nav-longShort-tab">
+                        <div>
+                            <canvas id="longShortOutcome"></canvas>
+                        </div>
+                        <script>
+                            let longShortOutcome = document.getElementById('longShortOutcome').getContext('2d');
+                            let shortOutcome = '<%- PandLVisComponents[1].shortOutcome %>'.split(',');
+                            let longOutcome = '<%- PandLVisComponents[1].longOutcome %>'.split(',');
+
+                            let chart7 = new Chart(longShortOutcome, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(255, 99, 132)',
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        data: shortOutcome
+                                    },
+                                    {
+                                        label: 'Exercised options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        borderColor: 'rgb(54, 162, 235)',
+                                        data: longOutcome
+                                    }]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-ICLegs" role="tabpanel" aria-labelledby="nav-ICLegs-tab">
+                        <div>
+                            <canvas id="ICLegsOutcome"></canvas>
+                        </div>
+                        <script>
+                            let ICLegsOutcome = document.getElementById('ICLegsOutcome').getContext('2d');
+                            let longcall = '<%- PandLVisComponents[1].longCall %>'.split(',');
+                            let longPut = '<%- PandLVisComponents[1].longPut %>'.split(',');
+                            let shortCall = '<%- PandLVisComponents[1].shortCall %>'.split(',');
+                            let shortPut = '<%- PandLVisComponents[1].shortPut %>'.split(',');
+
+                            let chart8 = new Chart(ICLegsOutcome, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Long call',
+                                        backgroundColor: 'rgb(255, 99, 132)',
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        data: longcall
+                                    },
+                                    {
+                                        label: 'Long Put',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        borderColor: 'rgb(54, 162, 235)',
+                                        data: longPut
+                                    },
+                                    {
+                                        label: 'Short Call',
+                                        backgroundColor: 'rgb(75, 192, 192)',
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        data: shortCall
+                                    },
+                                    {
+                                        label: 'Short Put',
+                                        backgroundColor: 'rgb(255, 205, 86)',
+                                        borderColor: 'rgb(255, 205, 86)',
+                                        data: shortPut
+                                    }]
+                                }
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        <h5> <u> Profitability of the backtesting strategy (monthly breakdown)</u></h5>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link" id="nav-january-tab" data-bs-toggle="tab" data-bs-target="#nav-january"
+                            type="button" role="tab" aria-controls="nav-january" aria-selected="false">January</button>
+                        <button class="nav-link" id="nav-february-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-february" type="button" role="tab" aria-controls="nav-february"
+                            aria-selected="true">February</button>
+                        <button class="nav-link" id="nav-march-tab" data-bs-toggle="tab" data-bs-target="#nav-march"
+                            type="button" role="tab" aria-controls="nav-march" aria-selected="false">March</button>
+                        <button class="nav-link" id="nav-april-tab" data-bs-toggle="tab" data-bs-target="#nav-april"
+                            type="button" role="tab" aria-controls="nav-april" aria-selected="false">April</button>
+                        <button class="nav-link" id="nav-may-tab" data-bs-toggle="tab" data-bs-target="#nav-may"
+                            type="button" role="tab" aria-controls="nav-may" aria-selected="false">May</button>
+                        <button class="nav-link" id="nav-june-tab" data-bs-toggle="tab" data-bs-target="#nav-june"
+                            type="button" role="tab" aria-controls="nav-june" aria-selected="true">June</button>
+                        <button class="nav-link" id="nav-july-tab" data-bs-toggle="tab" data-bs-target="#nav-july"
+                            type="button" role="tab" aria-controls="nav-july" aria-selected="false">July</button>
+                        <button class="nav-link" id="nav-august-tab" data-bs-toggle="tab" data-bs-target="#nav-august"
+                            type="button" role="tab" aria-controls="nav-august" aria-selected="false">August</button>
+                        <button class="nav-link" id="nav-september-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-september" type="button" role="tab" aria-controls="nav-september"
+                            aria-selected="false">September</button>
+                        <button class="nav-link" id="nav-october-tab" data-bs-toggle="tab" data-bs-target="#nav-october"
+                            type="button" role="tab" aria-controls="nav-october" aria-selected="true">October</button>
+                        <button class="nav-link" id="nav-november-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-november" type="button" role="tab" aria-controls="nav-november"
+                            aria-selected="false">November</button>
+                        <button class="nav-link" id="nav-december-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-december" type="button" role="tab" aria-controls="nav-december"
+                            aria-selected="false">December</button>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade" id="nav-january" role="tabpanel" aria-labelledby="nav-january-tab">
+                        <div>
+                            <canvas id="january"></canvas>
+                        </div>
+                        <script>
+                            const january = document.getElementById('january').getContext('2d');
+                            const labelsMonthly = '<%- PandLMonthlyVis[0] %>'.split(',');
+                            const janOutcome = '<%- PandLMonthlyVis[1].january %>'.split(',');
+                            const chart9 = new Chart(january, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: janOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-february" role="tabpanel" aria-labelledby="nav-february-tab">
+                        <div>
+                            <canvas id="february"></canvas>
+                        </div>
+                        <script>
+                            const february = document.getElementById('february').getContext('2d');
+                            const febOutcome = '<%- PandLMonthlyVis[1].february %>'.split(',');
+                            const chart10 = new Chart(february, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: febOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-march" role="tabpanel" aria-labelledby="nav-march-tab">
+                        <div>
+                            <canvas id="march"></canvas>
+                        </div>
+                        <script>
+                            const march = document.getElementById('march').getContext('2d');
+                            const marchOutcome = '<%- PandLMonthlyVis[1].march %>'.split(',');
+                            const chart11 = new Chart(march, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: marchOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-april" role="tabpanel" aria-labelledby="nav-april-tab">
+                        <div>
+                            <canvas id="april"></canvas>
+                        </div>
+                        <script>
+                            const april = document.getElementById('april').getContext('2d');
+                            const aprilOutcome = '<%- PandLMonthlyVis[1].april %>'.split(',');
+                            const chart12 = new Chart(april, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: aprilOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-may" role="tabpanel" aria-labelledby="nav-may-tab">
+                        <div>
+                            <canvas id="may"></canvas>
+                        </div>
+                        <script>
+                            const may = document.getElementById('may').getContext('2d');
+                            const mayOutcome = '<%- PandLMonthlyVis[1].may %>'.split(',');
+                            const chart13 = new Chart(may, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: mayOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-june" role="tabpanel" aria-labelledby="nav-june-tab">
+                        <div>
+                            <canvas id="june"></canvas>
+                        </div>
+                        <script>
+                            const june = document.getElementById('june').getContext('2d');
+                            const juneOutcome = '<%- PandLMonthlyVis[1].june %>'.split(',');
+                            const chart14 = new Chart(june, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: juneOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-july" role="tabpanel" aria-labelledby="nav-july-tab">
+                        <div>
+                            <canvas id="july"></canvas>
+                        </div>
+                        <script>
+                            const july = document.getElementById('july').getContext('2d');
+                            const julyOutcome = '<%- PandLMonthlyVis[1].july %>'.split(',');
+                            const chart15 = new Chart(july, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: julyOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-august" role="tabpanel" aria-labelledby="nav-august-tab">
+                        <div>
+                            <canvas id="august"></canvas>
+                        </div>
+                        <script>
+                            const august = document.getElementById('august').getContext('2d');
+                            const augOutcome = '<%- PandLMonthlyVis[1].august %>'.split(',');
+                            const chart16 = new Chart(august, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: augOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-september" role="tabpanel" aria-labelledby="nav-september-tab">
+                        <div>
+                            <canvas id="september"></canvas>
+                        </div>
+                        <script>
+                            const september = document.getElementById('september').getContext('2d');
+                            const sepOutcome = '<%- PandLMonthlyVis[1].september %>'.split(',');
+                            const chart17 = new Chart(september, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: sepOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-october" role="tabpanel" aria-labelledby="nav-october-tab">
+                        <div>
+                            <canvas id="october"></canvas>
+                        </div>
+                        <script>
+                            const october = document.getElementById('october').getContext('2d');
+                            const octOutcome = '<%- PandLMonthlyVis[1].october %>'.split(',');
+                            const chart18 = new Chart(october, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: octOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-november" role="tabpanel" aria-labelledby="nav-november-tab">
+                        <div>
+                            <canvas id="november"></canvas>
+                        </div>
+                        <script>
+                            const november = document.getElementById('november').getContext('2d');
+                            const novOutcome = '<%- PandLMonthlyVis[1].november %>'.split(',');
+                            const chart19 = new Chart(november, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: novOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                    <div class="tab-pane fade" id="nav-december" role="tabpanel" aria-labelledby="nav-december-tab">
+                        <div>
+                            <canvas id="december"></canvas>
+                        </div>
+                        <script>
+                            const december = document.getElementById('december').getContext('2d');
+                            const decOutcome = '<%- PandLMonthlyVis[1].december %>'.split(',');
+                            const chart20 = new Chart(december, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsMonthly,
+                                    datasets: [{
+                                        label: 'Expired worthless options',
+                                        backgroundColor: 'rgb(54, 162, 235)',
+                                        data: decOutcome
+                                    }
+                                    ]
+                                }
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

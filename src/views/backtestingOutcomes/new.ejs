@@ -1,0 +1,144 @@
+<% layout('layouts/boilerplate')%>
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-md-center">
+            <div class="col-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">New backtesting</h5>
+                        <form action="/backtestingOutcomes" method="POST" novalidate class="validated-form">
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Asset
+                                    Name</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="colFormLabelSm"
+                                        placeholder="Insert asset RIC " name="asset" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Option
+                                    Strategy</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="strategy">
+                                        <option>Short Iron Condor</option>
+                                        <option>Long Iron Condor</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Start
+                                    Year</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="sYear">
+                                        <option>2015</option>
+                                        <option>2016</option>
+                                        <option>2017</option>
+                                        <option>2018</option>
+                                        <option>2019</option>
+                                        <option>2020</option>
+                                        <option>2021</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class=" form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">End
+                                    Year</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="eYear">
+                                        <option>2015</option>
+                                        <option>2016</option>
+                                        <option>2017</option>
+                                        <option>2018</option>
+                                        <option>2019</option>
+                                        <option>2020</option>
+                                        <option>2021</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Transaction
+                                    Date</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="transDay">
+                                        <option>first</option>
+                                        <option>third</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Iron
+                                    Condor
+                                    lower
+                                    OTM</label>
+                                <div class="col-sm-6">
+                                    <input type="number" class="form-control form-control-sm" id="colFormLabelSm"
+                                        placeholder="Insert lower OTM size" name="sLeg" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Iron
+                                    Condor
+                                    higher
+                                    OTM</label>
+                                <div class="col-sm-6">
+                                    <input type="number" class="form-control form-control-sm" id="colFormLabelSm"
+                                        placeholder="Insert higher OTM size" name="lLeg" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Offset
+                                    type</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="offset">
+                                        <option>VIX</option>
+                                        <option>No offset</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Graphs to
+                                    show</label>
+                                <div class="col-sm-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1"
+                                            value="option1" checked disabled name="defaultOnly">
+                                        <label class="form-check-label" for="inlineCheckbox1">Defaults Only</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2"
+                                            value="option2" name="ExerExp">
+                                        <label class="form-check-label" for="inlineCheckbox2">Outcome components</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox3"
+                                            value="option3" name="CallPut">
+                                        <label class="form-check-label" for="inlineCheckbox3">Monthly breakdown</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm btn-block ">Get the results</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.validated-form')
+            Array.from(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
