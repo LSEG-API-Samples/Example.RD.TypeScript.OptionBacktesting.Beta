@@ -1,0 +1,82 @@
+<% layout('layouts/boilerplate')%>
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="card-body mt-2">
+                <div class="row">
+                    <h2 class="card-title">Backtesting Strategies</h2>
+                    <h5> <u> Short Iron Condor </u></h5>
+                    <div class="col-md-9">
+                        <p>
+                            In the iron condor strategy, the investor simultaneously holds a bull put spread and
+                            a
+                            bear
+                            call spread. The iron condor is constructed by selling one out-of-the-money put and
+                            buying
+                            one out-of-the-money put of a lower strike–a bull put spread–and selling one
+                            out-of-the-money call and buying one out-of-the-money call of a higher strike–a bear
+                            call
+                            spread.
+
+                            All options have the same expiration date and are on the same underlying asset.
+                            Typically,
+                            the put and call sides have the same spread width. This trading strategy earns a net
+                            premium
+                            on the structure and is designed to take advantage of a stock experiencing low
+                            volatility.
+                            Many traders use this strategy for its perceived high probability of earning a small
+                            amount
+                            of premium.
+                        <div class="row">
+                            <div class="col-md-2 pr-0">
+                                <span> <strong> See an example:</strong></span>
+                            </div>
+                            <div class="col-md-10">
+                                <a href="/backtestingOutcomes/<%= shortIC[0]._id%>">
+                                    <%= shortIC[0].title %>
+                                </a>
+                            </div>
+                        </div>
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="https://www.investopedia.com/thmb/krmc6z8aiAhk7pMPWLE--MCpC4k=/660x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/IronCondor2-16a0be248c6949438b44ad617011a0f5.png"
+                            class="card-img-top img-fluid">
+                    </div>
+                    <h5> <u> Long Straddle</u></h5>
+                    <div class="col-md-9 ">
+                        <p>
+                            A long straddle options strategy occurs when an investor simultaneously purchases a call
+                            and
+                            put
+                            option on the same underlying asset with the same strike price and expiration date. An
+                            investor
+                            will often use this strategy when they believe the price of the underlying asset will
+                            move
+                            significantly out of a specific range, but they are unsure of which direction the move
+                            will
+                            take.
+                            Theoretically, this strategy allows the investor to have the opportunity for unlimited
+                            gains. At
+                            the same time, the maximum loss this investor can experience is limited to the cost of
+                            both
+                            options contracts combined.
+                        <div class="row">
+                            <div class="col-md-2 pr-0">
+                                <span> <strong> See an example:</strong></span>
+                            </div>
+                            <div class="col-md-10">
+                                <a href="/backtestingOutcomes/<%= straddle[0]._id%>">
+                                    <%= straddle[0].title %>
+                                </a>
+                            </div>
+                        </div>
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="https://www.investopedia.com/thmb/CBMsew0aVGs2LYfAb9sIIRDhk9g=/660x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/understandingstraddles2-c0215924b5ba43189e1a136abc5484bf.png"
+                            class="card-img-top img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
