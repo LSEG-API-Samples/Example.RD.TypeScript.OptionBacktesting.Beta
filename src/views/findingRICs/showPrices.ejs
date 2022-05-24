@@ -1,0 +1,80 @@
+<% layout('layouts/boilerplate')%>
+
+    <div class="col-10 text-center mt-4">
+        <h3>Prices for <%=result.ric %> from <%=result.exchange %>
+                    <br> <a class="btn card-link btn-success ml-4 btn-sm mt-2" href="/findingRICs/newRIC/">Construct
+                        new
+                        RIC</a>
+                    <a class="btn card-link btn-info ml-4 btn-sm mt-2" href="/findingRICs/showRIC/">View constructed
+                        RICs</a>
+        </h3>
+        <div class="container-fluid">
+            <div class="table-responsive-md" id="content">
+                <table class="table align-middle table table-hover table caption-top" id="table1">
+                    <!-- <caption><strong> List of Option Transactions </strong></caption> -->
+                    <thead class="table-dark">
+                        <tr>
+                            <!-- <th scope="col">RIC</th> -->
+                            <th scope="col">Date</th>
+                            <th scope="col">Trade Price</th>
+                            <th scope="col">BID</th>
+                            <th scope="col">ASK</th>
+                            <th scope="col">Settle</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script>
+            let data = JSON.parse('<%- pricesValues %>')
+            data = Object.values(data)
+            console.log(data)
+            if (data[0]['SETTLE']) {
+                $(document).ready(function () {
+                    $('#table1').DataTable({
+                        data: data,
+                        columns: [
+                            { data: 'DATE' },
+                            { data: 'TRDPRC_1' },
+                            { data: 'BID' },
+                            { data: 'ASK' },
+                            { data: 'SETTLE' },
+                        ],
+                    });
+                });
+            }
+            else {
+                $(document).ready(function () {
+                    $('#table1').DataTable({
+                        data: data,
+                        columns: [
+                            { data: 'DATE' },
+                            { data: 'TRDPRC_1' },
+                            { data: 'BID' },
+                            { data: 'ASK' },
+                        ],
+                    });
+                });
+            }
+        </script>
+    </div>
+    <script>
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.validated-form')
+            Array.from(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>

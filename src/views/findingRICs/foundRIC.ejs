@@ -1,0 +1,127 @@
+<% layout('layouts/boilerplate')%>
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-md-left">
+            <div class="col-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Construct Option RIC</h5>
+                        <form action="/findingRICs/newRIC" method="POST" novalidate class="validated-form">
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">ISIN or
+                                    RIC</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="colFormLabelSm"
+                                        placeholder="Insert asset RIC or ISIN " name="asset" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Maturity
+                                    date</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="colFormLabelSm"
+                                        placeholder="Maturity date in yyyy-mm-dd " name="maturity" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="colFormLabelSm"
+                                    class="col-sm-6 col-form-label col-form-label">Strike</label>
+                                <div class="col-sm-6">
+                                    <input type="number" step="0.01" class="form-control form-control-sm"
+                                        id="colFormLabelSm" placeholder="Insert Strike Price" name="strike" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="colFormLabelSm" class="col-sm-6 col-form-label col-form-label">Option
+                                    type</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control form-control-sm" name="type">
+                                        <option>Call</option>
+                                        <option>Put</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm btn-block ">Get the results</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <% if (typeof objects[0]==='object' ){%>
+                            <h5 class="card-title">The following RIC(s) are found for the requested asset</h5>
+                            <ul class="list-group list-group-flush">
+                                <% for (let element of objects){%>
+                                    <li class="list-group-item mt-1">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-8 pr-0">
+                                                    Option RIC for <i>
+                                                        <%=element.asset %>
+                                                    </i> with maturity date of
+                                                    <i>
+                                                        <%=element.maturity %>
+                                                    </i> and
+                                                    strike price of <i>
+                                                        <%=element.strike %>
+                                                    </i>
+                                                    from <i>
+                                                        <%=element.exchange %>
+                                                    </i>: <b>
+                                                        <%=element.ric %>
+                                                    </b><br>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <a class="btn card-link btn-info ml-4 btn-sm"
+                                                        href="/findingRICs/showPrices/<%=element._id%>">View
+                                                        prices</a>
+                                                    <form class="d-inline"
+                                                        action="/findingRICs/showRIC/<%=element._id%>?_method=DELETE"
+                                                        method="POST">
+                                                        <button class="btn btn-danger btn-sm">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <% }%>
+                                        <%} else {%>
+                                            <div class="row">
+                                                <h5>Unfortunetly we could not find RICs with prices. Here is the list of
+                                                    possible ones:</h5>
+                                                <% for (let element of objects){%>
+                                                    <i>
+                                                        <b>
+                                                            <%= element %>
+                                                        </b>
+                                                    </i>
+                                                    <% }%>
+                                            </div>
+                                            <% }%>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.validated-form')
+            Array.from(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>

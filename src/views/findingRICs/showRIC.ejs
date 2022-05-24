@@ -1,0 +1,51 @@
+<% layout('layouts/boilerplate')%>
+    <div class="container-fluid mt-2">
+        <div class="row justify-content-md-center">
+            <div class="col-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">My Constructed RICs <br> <a
+                                class="btn card-link btn-success ml-4 btn-sm mt-2" href="/findingRICs/newRIC/">Construct
+                                new
+                                RIC</a> </h5>
+                        <ul class="list-group list-group-flush">
+                            <% for (let element of allricPrices){%>
+                                <li class="list-group-item mt-1">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                Option RIC for <i>
+                                                    <%=element.asset %>
+                                                </i> with maturity date of
+                                                <i>
+                                                    <%=element.maturity %>
+                                                </i> and
+                                                strike price of <i>
+                                                    <%=element.strike %>
+                                                </i>
+                                                from <i>
+                                                    <%=element.exchange %>
+                                                </i>: <b>
+                                                    <%=element.ric %>
+                                                </b>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a class="btn card-link btn-info ml-4 btn-sm"
+                                                    href="/findingRICs/showPrices/<%=element._id%>">View
+                                                    prices</a>
+                                                <form class="d-inline"
+                                                    action="/findingRICs/showRIC/<%=element._id%>?_method=DELETE"
+                                                    method="POST">
+                                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <% }%>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
